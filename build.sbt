@@ -99,14 +99,14 @@ def scalacOptionsForVersion(scalaVersion: String): Seq[String] = {
     "-language:postfixOps"
   )
   val versionOpts: Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
-    case Some((3, _)) => Seq(
-      "-Ykind-projector",
-    )
+    case Some((3, _)) => Seq("-Ykind-projector:underscores")
     case Some((2, major)) if major < 13 => Seq(
       "-Ywarn-adapted-args",
       "-Ywarn-inaccessible",
       "-Ywarn-nullary-override",
       "-Ypartial-unification",
+      "-Xsource:3",
+      "-P:kind-projector:underscore-placeholders",
     )
     case _ => Seq()
   }
@@ -124,7 +124,7 @@ lazy val commonSettings = Seq(
   ),
   ThisBuild / organization := "io.github.jmcardon",
   scalaVersion := crossScalaVersions.value.last,
-  crossScalaVersions := Seq("2.12.13", "2.13.6", "3.0.1"),
+  crossScalaVersions := Seq("2.12.17", "2.13.10", "3.2.1"),
   Test / fork := true,
   run / fork := true,
   // doc / scalacOptions ++= Seq(
@@ -136,7 +136,7 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= {
     if (isDotty(scalaVersion.value)) Seq.empty
     else Seq(
-      compilerPlugin("org.typelevel" % "kind-projector" % "0.13.0" cross CrossVersion.full),
+      compilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
       compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
     )
   },

@@ -121,10 +121,7 @@ final class TSecCSRF[F[_], A] private[tsec] (
     } yield isEqual(raw1, raw2)
 
   def validate(predicate: Request[F] => Boolean = _.method.isSafe): CSRFMiddleware[F] =
-    req =>
-      Kleisli { r: Request[F] =>
-        filter(predicate, r, req)
-    }
+    req => Kleisli(filter(predicate, _: Request[F], req))
 
   def withNewToken: CSRFMiddleware[F] = _.andThen(r => OptionT.liftF(embedNew(r)))
 

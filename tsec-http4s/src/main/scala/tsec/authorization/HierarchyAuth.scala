@@ -6,9 +6,9 @@ import cats.syntax.functor._
 import tsec.authentication
 
 sealed abstract case class HierarchyAuth[F[_], R, U, Auth](authLevel: R)(
-    implicit role: AuthorizationInfo[F, R, U],
-    enum: SimpleAuthEnum[R, Int],
-    F: MonadError[F, Throwable]
+  implicit role: AuthorizationInfo[F, R, U],
+  authEnum: SimpleAuthEnum[R, Int],
+  F: MonadError[F, Throwable]
 ) extends Authorization[F, U, Auth] {
 
   def isAuthorized(
@@ -16,8 +16,8 @@ sealed abstract case class HierarchyAuth[F[_], R, U, Auth](authLevel: R)(
   ): OptionT[F, authentication.SecuredRequest[F, U, Auth]] =
     OptionT {
       role.fetchInfo(toAuth.identity).map { authRole =>
-        val intRepr = enum.getRepr(authRole)
-        if (0 <= intRepr && intRepr <= enum.getRepr(authLevel) && enum.contains(authRole))
+        val intRepr = authEnum.getRepr(authRole)
+        if (0 <= intRepr && intRepr <= authEnum.getRepr(authLevel) && authEnum.contains(authRole))
           Some(toAuth)
         else
           None

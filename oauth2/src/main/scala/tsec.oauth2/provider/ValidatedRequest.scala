@@ -150,15 +150,16 @@ object ValidatedRequest {
     res
   }
 
-  private def clientCredentialByAuthorization(s: String): Either[InvalidClient, ClientCredential] =
-    Try(new String(s.base64Bytes, StandardCharsets.UTF_8))
-      .map(_.split(":", 2))
+  private def clientCredentialByAuthorization(s: String): Either[InvalidClient, ClientCredential] = {
+    s.b64Bytes.flatMap(b64bytes => Try(new String(b64bytes, StandardCharsets.UTF_8))
+      .map(_.split(":", 2)).toOption)
       .getOrElse(Array.empty[String]) match {
       case Array(clientId, clientSecret) =>
         Right(ClientCredential(clientId, if (clientSecret.isEmpty) None else Some(clientSecret)))
       case _ =>
         Left(InvalidClient("invalid Base 64"))
     }
+  }
 
   private def clientCredentialByParam(params: Map[String, Seq[String]]): Option[ClientCredential] =
     for {

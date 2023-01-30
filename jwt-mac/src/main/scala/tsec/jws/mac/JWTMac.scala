@@ -12,7 +12,10 @@ import tsec.jwt.algorithms.JWTMacAlgo
 import tsec.mac._
 import tsec.mac.jca.{MacErrorM, MacSigningKey}
 
-sealed abstract case class JWTMac[A](header: JWSMacHeader[A], body: JWTClaims, signature: MAC[A])
+sealed abstract class JWTMac[A](
+                                 val header: JWSMacHeader[A],
+                                 val body: JWTClaims,
+                                 val signature: MAC[A])
     extends JWSJWT[A, MAC] {
   def toEncodedString(implicit hs: JWSSerializer[JWSMacHeader[A]]): String =
     hs.toB64URL(header) + "." + JWTClaims.toB64URL(body) + "." + signature.toB64UrlString
@@ -25,7 +28,7 @@ sealed abstract case class JWTMac[A](header: JWSMacHeader[A], body: JWTClaims, s
       signature.toB64String == other.signature.toB64String
 
   override def equals(obj: Any): Boolean = obj match {
-    case j: JWTMac[A] => ==(j)
+    case j: JWTMac[_] => ==(j)
     case _            => false
   }
 }

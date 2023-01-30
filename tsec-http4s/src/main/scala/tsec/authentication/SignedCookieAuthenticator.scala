@@ -215,13 +215,13 @@ object SignedCookieAuthenticator {
 
   def apply[F[_], I, V, Alg](
       settings: TSecCookieSettings,
-      tokenStore: BackingStore[F, UUID, AuthenticatedCookie[Alg, I]],
+      tokenStoreApply: BackingStore[F, UUID, AuthenticatedCookie[Alg, I]],
       idStore: IdentityStore[F, I, V],
       key: MacSigningKey[Alg]
   )(implicit F: Sync[F], S: MessageAuth[F, Alg, MacSigningKey]): SignedCookieAuthenticator[F, I, V, Alg] =
     settings.maxIdle match {
       case Some(mIdle) =>
-        new SignedCookieAuthenticator[F, I, V, Alg](tokenStore, idStore, settings) {
+        new SignedCookieAuthenticator[F, I, V, Alg](tokenStoreApply, idStore, settings) {
 
           private[tsec] def validateCookie(
               internal: AuthenticatedCookie[Alg, I],
@@ -243,7 +243,7 @@ object SignedCookieAuthenticator {
         }
 
       case None =>
-        new SignedCookieAuthenticator[F, I, V, Alg](tokenStore, idStore, settings) {
+        new SignedCookieAuthenticator[F, I, V, Alg](tokenStoreApply, idStore, settings) {
           private[tsec] def validateCookie(
               internal: AuthenticatedCookie[Alg, I],
               raw: SignedCookie[Alg],

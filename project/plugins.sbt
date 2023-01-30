@@ -8,7 +8,7 @@ addSbtPlugin("com.github.gseitz"  % "sbt-release"    % "1.0.12")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.1.2")
 addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"   % "2.6")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.27")
-
+addSbtPlugin("ch.epfl.scala" % "sbt-scala3-migrate" % "0.5.0")
 
 libraryDependencies ++= List(
   "com.geirsson" %% "scalafmt-core" % "1.3.0",
